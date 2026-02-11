@@ -20,6 +20,11 @@ app.use(
 );
 app.use(express.json());
 
+
+app.get("/", (req, res) => {
+  res.json({ message: "Backend running 🚀" });
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 
