@@ -1,6 +1,7 @@
 const express = require("express");
 const Investment = require("../models/Investment");
 const auth = require("../middleware/authMiddleware");
+const { createInvestment } = require("../controller/portfolioController");
 
 const router = express.Router();
 
@@ -9,13 +10,7 @@ router.get("/", auth, async (req, res) => {
   res.json(investments);
 });
 
-router.post("/", auth, async (req, res) => {
-  const investment = await Investment.create({
-    ...req.body,
-    userId: req.user.id
-  });
-  res.json(investment);
-});
+router.post("/", auth, createInvestment);
 
 router.delete("/:id", auth, async (req, res) => {
   await Investment.findByIdAndDelete(req.params.id);
