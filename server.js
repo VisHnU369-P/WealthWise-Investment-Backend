@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5005;
 
 const startServer = async () => {
   try {
