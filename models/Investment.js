@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+const priceHistorySchema = new mongoose.Schema(
+  {
+    date: {
+      type: String, // "2026-02-14"
+      required: true,
+    },
+    close: {
+      type: Number,
+      required: true,
+    },
+  },
+  { _id: false } // prevents extra _id for each history item
+);
+
 const InvestmentSchema = new mongoose.Schema(
   {
     // 🔗 User reference
@@ -18,14 +32,15 @@ const InvestmentSchema = new mongoose.Schema(
     },
 
     symbol: {
-      type: String, // AAPL, BTC, NIFTY50
+      type: String,
       required: true,
       uppercase: true,
       trim: true,
+      index: true, // 🔥 faster symbol queries
     },
 
     assetName: {
-      type: String, // Apple Inc, Bitcoin
+      type: String,
       trim: true,
     },
 
@@ -42,11 +57,17 @@ const InvestmentSchema = new mongoose.Schema(
       min: 0,
     },
 
-    // 📈 Current value (can be mocked or updated later)
+    // 📈 Updated daily by cron
     currentPrice: {
       type: Number,
       default: 0,
       min: 0,
+    },
+
+    // 📊 Store historical close prices
+    priceHistory: {
+      type: [priceHistorySchema],
+      default: [],
     },
 
     // 📝 Optional
@@ -55,15 +76,19 @@ const InvestmentSchema = new mongoose.Schema(
       trim: true,
     },
 
-    // ❌ Soft delete (instead of hard delete)
+    // ❌ Soft delete
     isActive: {
       type: Boolean,
       default: true,
+      index: true,
     },
   },
   {
-    timestamps: true, // createdAt, updatedAt
-  },
+    timestamps: true,
+  }
 );
+
+// 🔥 Compound index for performance
+InvestmentSchema.index({ userId: 1, symbol: 1 });
 
 module.exports = mongoose.model("Investment", InvestmentSchema);

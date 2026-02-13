@@ -2,6 +2,7 @@ const express = require("express");
 const Investment = require("../models/Investment");
 const auth = require("../middleware/authMiddleware");
 const { createInvestment } = require("../controller/portfolioController");
+const { updateMarketPrices } = require("../controller/portfolioController");
 
 const router = express.Router();
 
@@ -33,6 +34,19 @@ router.get("/history/:symbol", auth, async (req, res) => {
 
   res.json(last7);
 });
+
+
+// 🔥 TEMP ROUTE FOR TESTING
+router.post("/trigger-update", auth, async (req, res) => {
+  try {
+    await updateMarketPrices();
+    res.json({ message: "Market prices updated successfully ✅" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Update failed ❌" });
+  }
+});
+
 
 
 module.exports = router;

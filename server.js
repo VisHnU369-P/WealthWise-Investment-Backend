@@ -3,7 +3,8 @@ const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const cron = require("node-cron");
-const { updateMarketPrices } = require("../controller/portfolioController");
+const { updateMarketPrices } = require("./controller/portfolioController");
+
 
 const authRoutes = require("./routes/authRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
@@ -30,7 +31,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolio", portfolioRoutes);
-app.use("/api/portfolio/history/:symbol", portfolioRoutes);
 
 const PORT = process.env.PORT || 5005;
 

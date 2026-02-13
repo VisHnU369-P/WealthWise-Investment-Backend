@@ -1,14 +1,15 @@
 const jwt = require("jsonwebtoken");
 const Investment = require("../models/Investment");
+const axios = require("axios");
 
 exports.createInvestment = async (req, res) => {
-try {
+  try {
     const { assetType, symbol, quantity, purchasePrice, assetName, notes } =
       req.body;
 
-      console.log(
-        "req.body", req.body
-      )
+    console.log(
+      "req.body", req.body
+    )
 
     const investment = await Investment.create({
       userId: req.user.id, // from decoded JWT
@@ -59,7 +60,11 @@ exports.updateMarketPrices = async () => {
       );
 
       const data = response.data["Time Series (Daily)"];
-      if (!data) continue;
+      if (!data) {
+        console.log("⚠️ API limit reached or invalid symbol:", symbol);
+        continue;
+      }
+
 
       const latestDate = Object.keys(data)[0];
       const latestClose = parseFloat(data[latestDate]["4. close"]);
