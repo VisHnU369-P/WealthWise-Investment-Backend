@@ -2,6 +2,8 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
+const cron = require("node-cron");
+const { updateMarketPrices } = require("../controller/portfolioController");
 
 const authRoutes = require("./routes/authRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
@@ -25,15 +27,37 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend running 🚀" });
 });
 
+
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolio", portfolioRoutes);
+app.use("/api/portfolio/history/:symbol", portfolioRoutes);
 
 const PORT = process.env.PORT || 5005;
 
+// const startServer = async () => {
+//   try {
+//     await connectDB(); // ✅ WAIT for MongoDB
+//     app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+//   } catch (error) {
+//     console.error("❌ Server failed to start", error);
+//   }
+// };
+
+
 const startServer = async () => {
   try {
-    await connectDB(); // ✅ WAIT for MongoDB
-    app.listen(PORT, () => console.log(`🚀 Server running on ${PORT}`));
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on ${PORT}`);
+    });
+
+    // ✅ DAILY CRON JOB (1 AM)
+    cron.schedule("0 1 * * *", async () => {
+      console.log("⏰ Running daily market update...");
+      await updateMarketPrices();
+    });
+
   } catch (error) {
     console.error("❌ Server failed to start", error);
   }
