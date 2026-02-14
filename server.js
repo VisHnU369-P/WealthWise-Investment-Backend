@@ -4,8 +4,8 @@ const cors = require("cors");
 const connectDB = require("./config/db");
 const cron = require("node-cron");
 const { updateMarketPrices } = require("./controller/portfolioController");
-
-
+const { updatePredefinedMarketData } = require("./services/marketUpdater");
+const marketDataRoutes = require("./routes/marketData");
 const authRoutes = require("./routes/authRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 
@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/portfolio", portfolioRoutes);
+app.use("/api/market", marketDataRoutes);
 
 const PORT = process.env.PORT || 5005;
 
@@ -56,6 +57,7 @@ const startServer = async () => {
     cron.schedule("0 1 * * *", async () => {
       console.log("⏰ Running daily market update...");
       await updateMarketPrices();
+      await updatePredefinedMarketData();
     });
 
   } catch (error) {
