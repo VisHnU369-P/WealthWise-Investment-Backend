@@ -7,9 +7,15 @@ const { updateMarketPrices } = require("../controller/portfolioController");
 const router = express.Router();
 
 router.get("/", auth, async (req, res) => {
-  const investments = await Investment.find({ userId: req.user.id });
-  res.json(investments);
+  if (req.user.role === "admin") {
+    const allInvestments = await Investment.find();
+    return res.json(allInvestments);
+  }
+
+  const userInvestments = await Investment.find({ userId: req.user.id });
+  res.json(userInvestments);
 });
+
 
 router.post("/", auth, createInvestment);
 
