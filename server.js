@@ -15,7 +15,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://wealth-wise-investment.vercel.app/" // if deployed
+      "https://wealth-wise-investment.vercel.app" // if deployed
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
